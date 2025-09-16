@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --green-light: #D9FFA3;
+  --green-dark: #0D5800;
 }
 
 @theme inline {
@@ -23,4 +25,42 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.hover-active:hover, .active {
+  @apply drop-shadow-[-2px_1px_4px_var(--green-dark)] font-bold
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: var(--green-dark) !important;
+  color: var(--green-light) !important;
+}
+
+.react-datepicker__day:not(.react-datepicker__day--selected):not(.react-datepicker__day--keyboard-selected),
+.react-datepicker__day-name {
+  color: var(--green-dark) !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: rgba(13, 88, 0, 0.2) !important;
+}
+
+.react-datepicker__header {
+  background-color: var(--green-dark) !important;
+  color: var(--green-light) !important;
+  border-bottom: none;
+}
+
+.react-datepicker {
+  border: 1px solid var(--green-dark) !important;
+}
+
+.react-datepicker__current-month {
+  color: var(--green-light) !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: var(--green-light) !important;
 }
