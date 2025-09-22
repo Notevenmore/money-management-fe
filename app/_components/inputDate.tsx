@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useState, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -18,14 +18,21 @@ export default function InputDate({
   dataKey,
 }: InputDateProps) {
   const value = data && data[dataKey] ? new Date(data[dataKey]) : null;
+  const datepickerRef = useRef<DatePicker>(null);
 
   return (
-    <div className="w-full flex justify-between gap-2 rounded-2xl bg-[var(--green-dark)] px-4 pt-2 pb-2 items-center border-[var(--green-light)] border-[1px]">
+    <div 
+      className="w-full flex justify-between gap-2 rounded-2xl bg-[var(--green-dark)] px-4 pt-2 pb-2 items-center border-[var(--green-light)] border-[1px]"
+      onClick={(e) => {
+        datepickerRef.current?.setFocus();
+      }}
+    >
       <div className="relative w-full flex gap-2 items-center">
         <label className="text-[var(--green-light)] text-lg font-semibold">
           {label}
         </label>
         <DatePicker
+          ref={datepickerRef}
           selected={value}
           onChange={(date: Date | null) => {
             setData({
