@@ -5,15 +5,52 @@ import ComponentCard from "./_components/component-card";
 import Button from "./_components/button";
 import Container from "./_components/container";
 import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchAssets } from "@/services/assetServices";
+import { fetchDebts } from "@/services/debtServices";
+import { fetchIncomes } from "@/services/incomeServices";
+import { fetchOutcomes } from "@/services/outcomeServices";
 
 export default function Home() {
   const [mounted, setMounted] = useState<boolean>(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, [mounted])
+  const dispatch = useAppDispatch();
+  const {incomes} = useAppSelector((state) => state.income);
+  const {outcomes} = useAppSelector((state) => state.outcome);
+  const {debts} = useAppSelector((state) => state.debt);
+  const {assets} = useAppSelector((state) => state.asset); 
 
-  if(!mounted) 
+  useEffect(() => {
+    if(incomes && outcomes && debts && assets) {
+      setMounted(true);
+      console.log(incomes, outcomes, debts, assets)
+    }
+  }, [incomes, outcomes, debts, assets])
+
+  useEffect(() => {
+    if(!assets) {
+      dispatch(fetchAssets());
+    }
+  }, [assets])
+
+  useEffect(() => {
+    if(!debts) {
+      dispatch(fetchDebts());    
+    }
+  }, [debts])
+
+  useEffect(() => {
+    if(!outcomes) {
+      dispatch(fetchOutcomes());
+    }
+  }, [outcomes])
+
+  useEffect(() => {
+    if(!incomes) {
+      dispatch(fetchIncomes());
+    }
+  }, [incomes])
+
+  if(!mounted && !incomes && !outcomes && !debts && !assets) 
     return null;
   else
     return (
@@ -21,148 +58,78 @@ export default function Home() {
         <div className="w-full col-start-1 col-end-2 row-start-1 row-end-2 ps-[75px] pt-[39px]">
           <CardInfo 
             title="Pemasukan"
-            content="Rp 100.000.000"
+            content={new Intl.NumberFormat(
+              "id-ID", 
+              {
+                style: "currency",
+                currency: "IDR"
+              }
+            ).format(incomes?.reduce((acc, curr) => acc + curr.nominal, 0) ?? 0)}
           />
         </div>
         <div className="w-full col-start-2 col-end-3 row-start-1 row-end-2 pe-[75px] pt-[39px]">
           <CardInfo 
             title="Tagihan"
-            content="10 Tagihan"
+            content={`${(debts?.filter((value) => value.is_finish === false) ?? []).length} Tagihan`}
           />
         </div>
         <div className="w-full col-start-1 col-end-2 row-start-2 row-end-3 ps-[75px] pt-[39px]">
           <CardInfo 
             title="Pengeluaran"
-            content="Rp 90.000.000"
-          />
-        </div>
-        <div className="w-full col-start-2 col-end-3 row-start-1 row-end-2 pe-[75px] pt-[39px]">
-          <CardInfo 
-            title="Tagihan"
-            content="10 Tagihan"
+            content={new Intl.NumberFormat(
+              "id-ID", 
+              {
+                style: "currency",
+                currency: "IDR"
+              }
+            ).format(outcomes?.reduce((acc, curr) => acc + curr.nominal, 0) ?? 0)}
           />
         </div>
         <div className="col-start-2 col-end-3 row-start-2 row-end-6 py-[39px] pe-[75px] w-full">
           <Container className="w-full h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden">
             <div className="overflow-y-scroll h-full flex flex-col items-center gap-[10px]">
-              <ComponentCard 
-                title="Tagihan I - 1 Januari 2020"
-                content="Paylater - 100.000"
-              >
-                <input type="checkbox" />
-              </ComponentCard>
-              <ComponentCard 
-                title="Tagihan I - 1 Januari 2020"
-                content="Paylater - 100.000"
-              >
-                <input type="checkbox" />
-              </ComponentCard>
-              <ComponentCard 
-                title="Tagihan I - 1 Januari 2020"
-                content="Paylater - 100.000"
-              >
-                <input type="checkbox" />
-              </ComponentCard>
-              <ComponentCard 
-                title="Tagihan I - 1 Januari 2020"
-                content="Paylater - 100.000"
-              >
-                <input type="checkbox" />
-              </ComponentCard>
-              <ComponentCard 
-                title="Tagihan I - 1 Januari 2020"
-                content="Paylater - 100.000"
-              >
-                <input type="checkbox" />
-              </ComponentCard>
-              <ComponentCard 
-                title="Tagihan I - 1 Januari 2020"
-                content="Paylater - 100.000"
-              >
-                <input type="checkbox" />
-              </ComponentCard>
-              <ComponentCard 
-                title="Tagihan I - 1 Januari 2020"
-                content="Paylater - 100.000"
-              >
-                <input type="checkbox" />
-              </ComponentCard>
+              {
+                debts?.map((value, index) => (
+                  <ComponentCard 
+                    key={index}
+                    title={`Tagihan ${index+1} - ${new Intl.DateTimeFormat('id-ID', {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric"
+                    }).format(new Date(value.deadline))}`}
+                    content={`${value.name} - ${new Intl.NumberFormat(
+                      "id-ID", 
+                      {
+                        style: "currency",
+                        currency: "IDR"
+                      }
+                    ).format(value.nominal)}`}
+                  >
+                    <input type="checkbox" />
+                  </ComponentCard>
+                ))
+              }
             </div>
           </Container>
         </div>
         <div className="col-start-1 col-end-2 row-start-3 row-end-6 py-[39px] ps-[75px] w-full">
           <Container className="w-full h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden">
             <div className="overflow-y-scroll h-full flex flex-col items-center gap-[10px]">
-              <ComponentCard 
-                title="Gold - 1 gr"
-                content="Reusable Asset"
-              >
-                <Button 
-                label="Sell"
-                className="bg-[var(--green-light)] text-[var(--green-dark)]"
-                onClick={() => {}}
-                />
-              </ComponentCard>
-              <ComponentCard 
-                title="Gold - 1 gr"
-                content="Reusable Asset"
-              >
-                <Button 
-                label="Sell"
-                className="bg-[var(--green-light)] text-[var(--green-dark)]"
-                onClick={() => {}}
-                />
-              </ComponentCard>
-              <ComponentCard 
-                title="Gold - 1 gr"
-                content="Reusable Asset"
-              >
-                <Button 
-                label="Sell"
-                className="bg-[var(--green-light)] text-[var(--green-dark)]"
-                onClick={() => {}}
-                />
-              </ComponentCard>
-              <ComponentCard 
-                title="Gold - 1 gr"
-                content="Reusable Asset"
-              >
-                <Button 
-                label="Sell"
-                className="bg-[var(--green-light)] text-[var(--green-dark)]"
-                onClick={() => {}}
-                />
-              </ComponentCard>
-              <ComponentCard 
-                title="Gold - 1 gr"
-                content="Reusable Asset"
-              >
-                <Button 
-                label="Sell"
-                className="bg-[var(--green-light)] text-[var(--green-dark)]"
-                onClick={() => {}}
-                />
-              </ComponentCard>
-              <ComponentCard 
-                title="Gold - 1 gr"
-                content="Reusable Asset"
-              >
-                <Button 
-                label="Sell"
-                className="bg-[var(--green-light)] text-[var(--green-dark)]"
-                onClick={() => {}}
-                />
-              </ComponentCard>
-              <ComponentCard 
-                title="Gold - 1 gr"
-                content="Reusable Asset"
-              >
-                <Button 
-                label="Sell"
-                className="bg-[var(--green-light)] text-[var(--green-dark)]"
-                onClick={() => {}}
-                />
-              </ComponentCard>
+              {
+                assets?.map((value, index) => (
+                  <ComponentCard 
+                    key={index}
+                    title={value.name}
+                    content={value.is_reusable ? "Reusable Asset" : "Unreusable Asset"}
+                  >
+                    <Button 
+                    label="Sell"
+                    className="bg-[var(--green-light)] text-[var(--green-dark)]"
+                    onClick={() => {}}
+                    />
+                  </ComponentCard>
+                ))
+              }
             </div>
           </Container>
         </div>
