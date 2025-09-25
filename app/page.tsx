@@ -22,7 +22,6 @@ export default function Home() {
   useEffect(() => {
     if(incomes && outcomes && debts && assets) {
       setMounted(true);
-      console.log(incomes, outcomes, debts, assets)
     }
   }, [incomes, outcomes, debts, assets])
 
@@ -86,7 +85,7 @@ export default function Home() {
           />
         </div>
         <div className="col-start-2 col-end-3 row-start-2 row-end-6 py-[39px] pe-[75px] w-full">
-          <Container className="w-full h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden">
+          <Container className="w-full h-max max-h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden">
             <div className="overflow-y-scroll h-full flex flex-col items-center gap-[10px]">
               {
                 debts?.map((value, index) => (
@@ -113,7 +112,7 @@ export default function Home() {
           </Container>
         </div>
         <div className="col-start-1 col-end-2 row-start-3 row-end-6 py-[39px] ps-[75px] w-full">
-          <Container className="w-full h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden">
+          <Container className="w-full h-max max-h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden">
             <div className="overflow-y-scroll h-full flex flex-col items-center gap-[10px]">
               {
                 assets?.map((value, index) => (

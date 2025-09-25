@@ -5,38 +5,27 @@ import Table from "../_components/table";
 import Container from "../_components/container";
 import Button from "../_components/button";
 import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchIncomes } from "@/services/incomeServices";
+import { fetchOutcomes } from "@/services/outcomeServices";
 
 
 export default function LaporanKeuangan() {
   const router = useRouter();
-  const [data, setData] = useState([
-    {
-      tanggal: '10 September 2025, 15.55',
-      pemasukan: 'Rp 3.200.000',
-      pengeluaran: '',
-      keterangan: 'Gaji Bulanan'
-    },
-    {
-      tanggal: '11 September 2025, 15.55',
-      pemasukan: 'Rp 1.000.000',
-      pengeluaran: '',
-      keterangan: 'Jajan Mingguan'
-    },
-    {
-      tanggal: '12 September 2025, 15.55',
-      pemasukan: '',
-      pengeluaran: 'Rp 1.100.000',
-      keterangan: 'Beli Emas 0.5 gr'
-    },
-    {
-      tanggal: '10 September 2025, 15.55',
-      pemasukan: '',
-      pengeluaran: 'Rp 20.000',
-      keterangan: 'Sarapan'
-    },
-  ]);
-
-  const [header, setHeader] = useState([
+  const dispatch = useAppDispatch();
+  const {incomes} = useAppSelector((state) => state.income);
+  const {outcomes} = useAppSelector((state) => state.outcome);
+  const [report, setReport] = useState<{
+    tanggal: string;
+    tanggalFilter: string;
+    pemasukan: string | null;
+    pengeluaran: string | null;
+    keterangan: string;
+  }[]>();
+  const [header, setHeader] = useState<{
+    head: string,
+    key: string
+  }[]>([
     {
       head: 'Tanggal',
       key: 'tanggal'
@@ -53,22 +42,80 @@ export default function LaporanKeuangan() {
       head: 'Keterangan',
       key: 'keterangan',
     }
-  ])
+  ]);
 
-  const [footer, setFooter] = useState([
-    {
-      label: 'Total',
-      value: 'Rp 3.080.000'
-    }
-  ])
+  const [footer, setFooter] = useState<{label: string, value: string}[]>()
 
   const [mounted, setMounted] = useState<boolean>(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, [mounted])
 
-  if(!mounted) 
+  useEffect(() => {
+    if(incomes && outcomes) {
+      setReport([
+        ...(incomes.map(value => ({
+          tanggal: new Intl.DateTimeFormat('id-ID', {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+          }).format(new Date(value.date)),
+          tanggalFilter: value.date,
+          pemasukan: new Intl.NumberFormat(
+              "id-ID", 
+              {
+                style: "currency",
+                currency: "IDR"
+              }
+            ).format(value.nominal),
+          pengeluaran: null,
+          keterangan: value.category
+        }))),
+        ...(outcomes.map(value => ({
+          tanggal: new Intl.DateTimeFormat('id-ID', {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+          }).format(new Date(value.date)),
+          tanggalFilter: value.date,
+          pengeluaran: new Intl.NumberFormat(
+              "id-ID", 
+              {
+                style: "currency",
+                currency: "IDR"
+              }
+            ).format(value.nominal),
+          pemasukan: null,
+          keterangan: value.category
+        })))
+      ].sort((a, b) => a.tanggalFilter.localeCompare(b.tanggalFilter)));
+      setMounted(true);
+      setFooter([{
+        label: "Total",
+        value: new Intl.NumberFormat(
+          "id-ID", 
+          {
+            style: "currency",
+            currency: "IDR"
+          }
+        ).format(
+          (incomes?.reduce((acc, curr) => acc + curr.nominal, 0) ?? 0) 
+          - (outcomes?.reduce((acc, curr) => acc + curr.nominal, 0) ?? 0)
+        )
+      }])
+    }
+  }, [incomes, outcomes])
+
+  useEffect(() => {
+    if(!incomes) {
+      dispatch(fetchIncomes())
+    }
+  }, [incomes])
+
+  useEffect(() => {
+    if(!outcomes) {
+      dispatch(fetchOutcomes())
+    }
+  }, [outcomes])
+
+  if(!mounted && !footer && !report) 
     return null;
   else
     return (
@@ -91,9 +138,9 @@ export default function LaporanKeuangan() {
           />
         </Container>
         <Table
-          data={data}
+          data={report}
           header={header}
-          footer={footer}
+          footer={footer!}
         />
         <Container className="flex gap-[10px] items-center justify-center py-[10px] w-full h-[62px] bg-[var(--green-light)] rounded-[23px]">
           <Button 

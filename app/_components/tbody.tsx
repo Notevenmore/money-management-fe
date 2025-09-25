@@ -1,5 +1,5 @@
 interface TBodyProps {
-  data: any[];
+  data?: any[];
   header: {
     head: string;
     key: string;
@@ -13,7 +13,7 @@ export default function TBody({
   return (
     <tbody>
       {
-        data.map((value, index) => (
+        data!.map((value, index) => (
           <tr key={index}>
             {
               header.map((head, i) => (

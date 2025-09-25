@@ -4,7 +4,7 @@ import TBody from "./tbody";
 import TFooter from "./tfooter";
 
 interface TableProps {
-  data: any[];
+  data?: any[];
   header: {
     head: string;
     key: string;
@@ -24,7 +24,7 @@ export default function Table({
       <table className="w-full h-full">
         <THead header={header} />
         <TBody 
-          data={data}
+          data={data!}
           header={header}
         />
         <TFooter 
