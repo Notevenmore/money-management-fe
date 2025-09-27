@@ -42,7 +42,6 @@ export const createDebt = createAsyncThunk<{message: string}, Debt>(
           }
         }
       );
-      console.log(response);
       // nProgress.done();
 
       if(response.data.status_code as number !== 202) return rejectWithValue(response.data.message || 'Gagal menambahkan tagihan');
@@ -50,6 +49,31 @@ export const createDebt = createAsyncThunk<{message: string}, Debt>(
     } catch (err) {
       // nProgress.done();
       return rejectWithValue('Terjadi kesalahan dalam menambahkan tagihan.');
+    }
+  }
+);
+
+export const updateDebt = createAsyncThunk<{message: string}, {debt: Debt, id: number}>(
+  'debt/updateDebt',
+  async ({debt, id}, { rejectWithValue }) => {
+    try {
+      // nProgress.start();
+      const response = await axios.put(
+        API_URL + id,
+        debt,
+        {
+          headers: { 
+            'Content-Type': 'application/json' 
+          }
+        }
+      );
+      // nProgress.done();
+
+      if(response.data.status_code as number !== 202) return rejectWithValue(response.data.message || 'Gagal mengupdate tagihan');
+      return { message: response.data.message };
+    } catch (err) {
+      // nProgress.done();
+      return rejectWithValue('Terjadi kesalahan dalam mengupdate tagihan.');
     }
   }
 );

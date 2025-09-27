@@ -1,5 +1,5 @@
 import { Debt } from "@/interface/debt";
-import { createDebt, fetchDebts } from "@/services/debtServices";
+import { createDebt, fetchDebts, updateDebt } from "@/services/debtServices";
 import { createSlice } from "@reduxjs/toolkit";
 
 const debtSlice = createSlice({
@@ -39,6 +39,17 @@ const debtSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(createDebt.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message as string;
+      })
+      .addCase(updateDebt.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateDebt.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(updateDebt.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message as string;
       })

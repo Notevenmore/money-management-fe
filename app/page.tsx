@@ -7,9 +7,10 @@ import Container from "./_components/container";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchAssets } from "@/services/assetServices";
-import { fetchDebts } from "@/services/debtServices";
+import { fetchDebts, updateDebt } from "@/services/debtServices";
 import { fetchIncomes } from "@/services/incomeServices";
-import { fetchOutcomes } from "@/services/outcomeServices";
+import { createOutcome, fetchOutcomes } from "@/services/outcomeServices";
+import { Debt } from "@/interface/debt";
 
 export default function Home() {
   const [mounted, setMounted] = useState<boolean>(false);
@@ -48,6 +49,21 @@ export default function Home() {
       dispatch(fetchIncomes());
     }
   }, [incomes])
+
+  const onUpdate = async (id: number, value: boolean, debt: Debt) => {
+    await dispatch(updateDebt({
+      debt: {
+        ...debt, 
+        is_finish: value
+      }, 
+      id: id
+    }));
+    await dispatch(fetchDebts());
+    await dispatch(fetchOutcomes());
+    // if(value) {
+    //   await dispatch(createOutcome({}))
+    // }
+  }
 
   if(!mounted && !incomes && !outcomes && !debts && !assets) 
     return null;
@@ -104,7 +120,7 @@ export default function Home() {
                       }
                     ).format(value.nominal)}`}
                   >
-                    <input type="checkbox" />
+                    <input type="checkbox" onChange={(e) => {onUpdate(value.id!, e.target.checked, value)}} checked={value.is_finish} />
                   </ComponentCard>
                 ))
               }
