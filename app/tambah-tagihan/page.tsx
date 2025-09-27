@@ -4,11 +4,25 @@ import { useEffect, useState } from "react";
 import Input from "../_components/input";
 import InputDate from "../_components/inputDate";
 import Container from "../_components/container";
-import Checkbox from "../_components/checkbox";
 import Button from "../_components/button";
+import { Debt } from "@/interface/debt";
+import { useAppDispatch } from "@/store/hooks";
+import { createDebt, fetchDebts } from "@/services/debtServices";
+import { useRouter } from 'next/navigation';
 
-export default function TambahAset() {
-  const [data, setData] = useState<{tagihan_name: string; nominal: number; date: string;}>();
+export default function TambahTagihan() {
+  const [data, setData] = useState<Debt>();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  const onSubmit = async () => {
+    if(data && data.name && data.name !== '' && data.nominal && data.deadline) {
+      await dispatch(createDebt(data!));
+      await dispatch(fetchDebts());
+      alert("Berhasil ditambahkan");
+      router.push('/');
+    }
+  }
 
   return (
     <div className="flex flex-col gap-[10px] justify-center items-center justify-items-center bg-white h-[90vh] px-[54px] py-[39px]">
@@ -18,8 +32,10 @@ export default function TambahAset() {
           label="Nama Tagihan"
           data={data}
           setData={setData}
-          dataKey="tagihan_name"
+          dataKey="name"
           type="text"
+          error={data?.name ? false : true}
+          errorMessage="Tambahkan nama tagihan"
         />
         <Input 
           label="Nominal"
@@ -27,16 +43,20 @@ export default function TambahAset() {
           setData={setData}
           dataKey="nominal"
           type="number"
+          error={data?.nominal ? false : true}
+          errorMessage="Tambahkan nominal tagihan"
         />
         <InputDate 
           label="Tenggat"
           data={data}
           setData={setData}
-          dataKey="date"
+          dataKey="deadline"
+          error={data?.deadline ? false : true}
+          errorMessage="Tambahkan tenggat tagihan"
         />
         <Button 
           label="Submit"
-          onClick={() => {}}
+          onClick={onSubmit}
           className="bg-[var(--green-dark)] text-[var(--green-light)] text-lg font-extrabold flex items-center justify-center !w-full"
         />
       </Container>

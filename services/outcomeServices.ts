@@ -29,6 +29,7 @@ export const createOutcome = createAsyncThunk<{message: string}, Outcome>(
   async (outcome: Outcome, { rejectWithValue }) => {
     try {
       // nProgress.start();
+      outcome.date = new Date(outcome.date).toISOString().split(".")[0] + "Z";
       const response = await axios.post(
         API_URL,
         outcome,

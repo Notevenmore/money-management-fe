@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useState, useRef } from "react";
+import { SetStateAction, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -9,6 +9,8 @@ interface InputDateProps {
   data: any;
   setData: React.Dispatch<SetStateAction<any>>;
   dataKey: string;
+  error: boolean;
+  errorMessage: string;
 }
 
 export default function InputDate({
@@ -16,44 +18,49 @@ export default function InputDate({
   data,
   setData,
   dataKey,
+  error,
+  errorMessage
 }: InputDateProps) {
   const value = data && data[dataKey] ? new Date(data[dataKey]) : null;
   const datepickerRef = useRef<DatePicker>(null);
 
   return (
-    <div 
-      className="w-full flex justify-between gap-2 rounded-2xl bg-[var(--green-dark)] px-4 pt-2 pb-2 items-center border-[var(--green-light)] border-[1px]"
-      onClick={(e) => {
-        datepickerRef.current?.setFocus();
-      }}
-    >
-      <div className="relative w-full flex gap-2 items-center">
-        <label className="text-[var(--green-light)] text-lg font-semibold">
-          {label}
-        </label>
-        <DatePicker
-          ref={datepickerRef}
-          selected={value}
-          onChange={(date: Date | null) => {
-            setData({
-              ...data!,
-              [dataKey]: date ? date.toISOString().split("T")[0] : "",
-            });
-          }}
-          dateFormat="dd/MM/yyyy"
-          placeholderText="dd/mm/yyyy"
-          className="peer w-full h-full bg-transparent text-[var(--green-light)] focus:outline-none text-lg"
-          calendarClassName="!bg-[var(--green-light)] !text-[var(--green-dark)] rounded-lg"
-          dayClassName={(date) =>
-            "react-datepicker__day" +
-            (value &&
-            date.toDateString() === new Date(value).toDateString()
-              ? " !bg-[var(--green-dark)] !text-[var(--green-light)] rounded-full"
-              : "")
-          }
-        />
+    <div className="w-full flex flex-col gap-1">
+      <div 
+        className="w-full flex justify-between gap-2 rounded-2xl bg-[var(--green-dark)] px-4 pt-2 pb-2 items-center border-[var(--green-light)] border-[1px]"
+        onClick={(e) => {
+          datepickerRef.current?.setFocus();
+        }}
+      >
+        <div className="relative w-full flex gap-2 items-center">
+          <label className="text-[var(--green-light)] text-lg font-semibold">
+            {label}
+          </label>
+          <DatePicker
+            ref={datepickerRef}
+            selected={value}
+            onChange={(date: Date | null) => {
+              setData({
+                ...data!,
+                [dataKey]: date ? date.toISOString().split("T")[0] : "",
+              });
+            }}
+            dateFormat="dd/MM/yyyy"
+            placeholderText="dd/mm/yyyy"
+            className="peer w-full h-full bg-transparent text-[var(--green-light)] focus:outline-none text-lg"
+            calendarClassName="!bg-[var(--green-light)] !text-[var(--green-dark)] rounded-lg"
+            dayClassName={(date) =>
+              "react-datepicker__day" +
+              (value &&
+              date.toDateString() === new Date(value).toDateString()
+                ? " !bg-[var(--green-dark)] !text-[var(--green-light)] rounded-full"
+                : "")
+            }
+          />
+        </div>
+        <img src="/icons/calendar-icon.svg" alt="" />
       </div>
-      <img src="/icons/calendar-icon.svg" alt="" />
+      { error && <p className="text-[#ff0000] text-sm ms-4 font-semibold tracking-[.3px]">{errorMessage}</p> }
     </div>
   );
 }

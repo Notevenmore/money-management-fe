@@ -112,22 +112,25 @@ export default function Home() {
           </Container>
         </div>
         <div className="col-start-1 col-end-2 row-start-3 row-end-6 py-[39px] ps-[75px] w-full">
-          <Container className="w-full h-max max-h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden">
-            <div className="overflow-y-scroll h-full flex flex-col items-center gap-[10px]">
+          <Container className="w-full h-full max-h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden py-[39px]">
+            <div className="overflow-y-scroll h-full max-h-full flex flex-col items-center gap-[10px]">
               {
-                assets?.map((value, index) => (
-                  <ComponentCard 
-                    key={index}
-                    title={value.name}
-                    content={value.is_reusable ? "Reusable Asset" : "Unreusable Asset"}
-                  >
-                    <Button 
-                    label="Sell"
-                    className="bg-[var(--green-light)] text-[var(--green-dark)]"
-                    onClick={() => {}}
-                    />
-                  </ComponentCard>
-                ))
+                assets && assets?.length > 0 
+                  ? assets?.map((value, index) => (
+                    <ComponentCard 
+                      key={index}
+                      title={value.name}
+                      content={value.is_reusable ? "Reusable Asset" : "Unreusable Asset"}
+                    >
+                      <Button 
+                      label="Sell"
+                      className="bg-[var(--green-light)] text-[var(--green-dark)]"
+                      onClick={() => {}}
+                      />
+                    </ComponentCard>
+                  )) : <Container className="w-full h-full bg-[var(--green-dark)] rounded-[23px] overflow-y-hidden py-[39px] text-[var(--green-light)] flex items-center justify-center font-bold text-xl tracking-[1px]">
+                    Belum ada data aset yang ditambahkan
+                  </Container>
               }
             </div>
           </Container>

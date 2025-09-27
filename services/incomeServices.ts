@@ -29,6 +29,7 @@ export const createIncome = createAsyncThunk<{message: string}, Income>(
   async (income: Income, { rejectWithValue }) => {
     try {
       // nProgress.start();
+      income.date = new Date(income.date).toISOString().split(".")[0] + "Z";
       const response = await axios.post(
         API_URL,
         income,

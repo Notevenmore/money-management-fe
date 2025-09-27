@@ -9,6 +9,8 @@ interface SelectProps {
   data: any;
   setData: React.Dispatch<React.SetStateAction<any>>;
   dataKey: string;
+  error: boolean;
+  errorMessage: string;
 }
 
 export default function Select({
@@ -16,7 +18,9 @@ export default function Select({
   data,
   setData,
   dataKey,
-  options
+  options,
+  error,
+  errorMessage
 }: SelectProps) {
   const [isShow, setIsShow] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -26,7 +30,6 @@ export default function Select({
     value: any
   ) => {
     e.stopPropagation();
-    console.log(value);
     setData({
       ...data!,
       [dataKey]: value
@@ -39,59 +42,62 @@ export default function Select({
     : "";
 
   return (
-    <div 
-      className="relative w-full cursor-pointer"
-      onClick={() => {
-        setIsShow(!isShow);
-        setFocused(!focused);
-      }}
-      onBlur={() => {
-        setIsShow(false)
-        setFocused(false)
-      }}
-      tabIndex={0}
-    >
-      <div
-        className={`peer w-full rounded-2xl bg-[var(--green-dark)] text-[var(--green-light)] border-[1px] border-[var(--green-light)] focus:outline-none flex justify-between items-center transition-all duration-200 ${
-          isShow || selectedValue || focused ? (selectedValue && (!isShow || focused) ? "px-4 py-8" : 'rounded-b-none px-4 py-8') : "px-4 py-4"
-        }`}
+    <div className="w-full flex flex-col gap-1">
+      <div 
+        className="relative w-full cursor-pointer"
+        onClick={() => {
+          setIsShow(!isShow);
+          setFocused(!focused);
+        }}
+        onBlur={() => {
+          setIsShow(false)
+          setFocused(false)
+        }}
+        tabIndex={0}
       >
-        <span>{selectedValue || ""}</span>
-        <img
-          src="/icons/keyboard_arrow_down.png"
-          alt=""
-          className={
-            isShow
-              ? "rotate-180 transition-all duration-200"
-              : "rotate-0 transition-all duration-200"
-          }
-        />
+        <div
+          className={`peer w-full rounded-2xl bg-[var(--green-dark)] text-[var(--green-light)] border-[1px] border-[var(--green-light)] focus:outline-none flex justify-between items-center transition-all duration-200 ${
+            isShow || selectedValue || focused ? (selectedValue && (!isShow || focused) ? "px-4 py-8" : 'rounded-b-none px-4 py-8') : "px-4 py-4"
+          }`}
+        >
+          <span>{selectedValue || ""}</span>
+          <img
+            src="/icons/keyboard_arrow_down.png"
+            alt=""
+            className={
+              isShow
+                ? "rotate-180 transition-all duration-200"
+                : "rotate-0 transition-all duration-200"
+            }
+          />
+        </div>
+        <label
+          className={`
+            absolute left-4 text-[var(--green-light)] transition-all duration-200
+            ${focused || selectedValue || isShow
+              ? "top-2 text-sm font-extrabold"
+              : "top-4 text-lg font-semibold"}
+          `}
+        >
+          {label}
+        </label>
+        <div
+          className={`absolute top-[100%] left-0 w-full bg-[var(--green-dark)] rounded-b-2xl overflow-hidden border-x-[1px] border-b-[1px] border-[var(--green-light)] z-50 transition-all duration-200 ${
+            isShow ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          {options.map((option, index) => (
+            <div
+              key={index}
+              className="px-4 py-2 text-[var(--green-light)] hover:bg-[var(--green-light)] hover:text-[var(--green-dark)] cursor-pointer transition-all duration-200 z-50"
+              onClick={(e) => action(e, option.value)}
+            >
+              {option.key}
+            </div>
+          ))}
+        </div>
       </div>
-      <label
-        className={`
-          absolute left-4 text-[var(--green-light)] transition-all duration-200
-          ${focused || selectedValue || isShow
-            ? "top-2 text-sm font-extrabold"
-            : "top-4 text-lg font-semibold"}
-        `}
-      >
-        {label}
-      </label>
-      <div
-        className={`absolute top-[100%] left-0 w-full bg-[var(--green-dark)] rounded-b-2xl overflow-hidden border-x-[1px] border-b-[1px] border-[var(--green-light)] z-50 transition-all duration-200 ${
-          isShow ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        {options.map((option, index) => (
-          <div
-            key={index}
-            className="px-4 py-2 text-[var(--green-light)] hover:bg-[var(--green-light)] hover:text-[var(--green-dark)] cursor-pointer transition-all duration-200 z-50"
-            onClick={(e) => action(e, option.value)}
-          >
-            {option.key}
-          </div>
-        ))}
-      </div>
+      { error && <p className="text-[#ff0000] text-sm ms-4 font-semibold tracking-[.3px]">{errorMessage}</p> }
     </div>
   );
 }

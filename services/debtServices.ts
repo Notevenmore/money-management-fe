@@ -29,15 +29,20 @@ export const createDebt = createAsyncThunk<{message: string}, Debt>(
   async (debt: Debt, { rejectWithValue }) => {
     try {
       // nProgress.start();
+      debt.deadline = new Date(debt.deadline).toISOString().split(".")[0] + "Z";
       const response = await axios.post(
         API_URL,
-        debt,
+        {
+          ...debt,
+          is_finish: false
+        },
         {
           headers: { 
             'Content-Type': 'application/json' 
           }
         }
       );
+      console.log(response);
       // nProgress.done();
 
       if(response.data.status_code as number !== 202) return rejectWithValue(response.data.message || 'Gagal menambahkan tagihan');
