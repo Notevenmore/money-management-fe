@@ -119,7 +119,7 @@ export default function LaporanKeuangan() {
     return null;
   else
     return (
-      <div className="flex flex-col gap-[39px] justify-center justify-items-center bg-white h-[90vh] px-[54px] py-[39px]">
+      <div className="flex flex-col gap-[39px] justify-center justify-items-center bg-white h-max min-h-[90vh] px-[54px] py-[39px] overflow-y-scroll">
         <Container className="flex gap-[10px] items-center justify-center py-[10px] w-full h-[62px] bg-[var(--green-light)] rounded-[23px]">
           <Button 
             label="Tambah Pemasukan"

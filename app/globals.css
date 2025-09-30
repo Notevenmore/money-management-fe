@@ -68,3 +68,17 @@ body {
 ::-webkit-scrollbar {
   display: none;
 }
+
+#nprogress .bar {
+  background-color: var(--green-dark) !important;
+  height: 4px;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px var(--green-dark), 0 0 5px var(--green-dark) !important;
+}
+
+#nprogress .spinner-icon {
+  border-top-color: var(--green-dark) !important;
+  border-left-color: var(--green-dark) !important;
+}

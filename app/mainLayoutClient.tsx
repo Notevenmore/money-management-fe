@@ -1,11 +1,10 @@
 "use client"
 
-import "./globals.css";
 import Nav from "./_layout/navigation";
 import { Inter } from 'next/font/google';
-// import ProgressBar from "./_components/progressBar";
 import { Provider } from "react-redux";
 import { store } from "@/store";
+import "./globals.css";
 
 const inter = Inter({
   subsets: ['latin'],

@@ -60,9 +60,6 @@ export default function Home() {
     }));
     await dispatch(fetchDebts());
     await dispatch(fetchOutcomes());
-    // if(value) {
-    //   await dispatch(createOutcome({}))
-    // }
   }
 
   if(!mounted && !incomes && !outcomes && !debts && !assets) 
@@ -138,7 +135,7 @@ export default function Home() {
                       title={value.name}
                       content={value.is_reusable ? "Reusable Asset" : "Unreusable Asset"}
                     >
-                      <Button 
+                      <Button
                       label="Sell"
                       className="bg-[var(--green-light)] text-[var(--green-dark)]"
                       onClick={() => {}}

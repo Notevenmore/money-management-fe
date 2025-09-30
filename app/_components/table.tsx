@@ -20,7 +20,7 @@ export default function Table({
   footer
 }: TableProps) {
   return (
-    <div className="w-full h-full p-[11px] bg-[var(--green-light)] rounded-[23px]">
+    <div className="w-full h-max p-[11px] bg-[var(--green-light)] rounded-[23px]">
       <table className="w-full h-full">
         <THead header={header} />
         <TBody 
