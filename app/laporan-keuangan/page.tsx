@@ -8,23 +8,26 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchIncomes } from "@/services/incomeServices";
 import { fetchOutcomes } from "@/services/outcomeServices";
+// import * as XLSX from 'xlsx';
+import XLSX  from 'xlsx-js-style';
+import { saveAs } from 'file-saver';
 
+interface ReportType {
+  tanggal: string;
+  pemasukan: string | null;
+  pengeluaran: string | null;
+  keterangan: string;
+};
 
 export default function LaporanKeuangan() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const {incomes} = useAppSelector((state) => state.income);
   const {outcomes} = useAppSelector((state) => state.outcome);
-  const [report, setReport] = useState<{
-    tanggal: string;
-    tanggalFilter: string;
-    pemasukan: string | null;
-    pengeluaran: string | null;
-    keterangan: string;
-  }[]>();
+  const [report, setReport] = useState<(ReportType&{tanggalFilter: string})[]>();
   const [header, setHeader] = useState<{
     head: string,
-    key: string
+    key: keyof ReportType
   }[]>([
     {
       head: 'Tanggal',
@@ -75,6 +78,7 @@ export default function LaporanKeuangan() {
             year: "numeric"
           }).format(new Date(value.date)),
           tanggalFilter: value.date,
+          pemasukan: null,
           pengeluaran: new Intl.NumberFormat(
               "id-ID", 
               {
@@ -82,7 +86,6 @@ export default function LaporanKeuangan() {
                 currency: "IDR"
               }
             ).format(value.nominal),
-          pemasukan: null,
           keterangan: value.category
         })))
       ].sort((a, b) => a.tanggalFilter.localeCompare(b.tanggalFilter)));
@@ -115,6 +118,77 @@ export default function LaporanKeuangan() {
     }
   }, [outcomes])
 
+  const exportData = async () => {
+    if(report) {
+      const data = report.map(value => {
+        const {tanggalFilter, ...val} = value;
+        return val;
+      });
+      const excelHeader = header.map(value => value.head);
+      const wsData = [excelHeader, ...data.map(obj => {
+        const keys = header.map(value => value.key);
+        const objData = keys.map(key => obj[key] || '');
+        return objData;
+      })];  
+
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      Object.keys(ws).forEach((cell) => {
+        if (cell[0] === "!") return; 
+
+        if (cell.match(/^[A-Z]+1$/)) {
+          ws[cell].s = {
+            font: { bold: true, sz: 12, name: "Arial" },
+            fill: { fgColor: { rgb: "D9D9D9" } },
+            alignment: { horizontal: "center", vertical: "center" },
+            border: {
+              top: { style: "thin", color: { rgb: "000000" } },
+              bottom: { style: "thin", color: { rgb: "000000" } },
+              left: { style: "thin", color: { rgb: "000000" } },
+              right: { style: "thin", color: { rgb: "000000" } },
+            },
+          };
+        } else {
+          ws[cell].s = {
+            font: { sz: 11, name: "Arial" },
+            alignment: { horizontal: "center", vertical: "center" },
+            border: {
+              top: { style: "thin", color: { rgb: "000000" } },
+              bottom: { style: "thin", color: { rgb: "000000" } },
+              left: { style: "thin", color: { rgb: "000000" } },
+              right: { style: "thin", color: { rgb: "000000" } },
+            },
+          };
+        }
+      });
+
+      ws["!cols"] = [
+        { wch: 25 }, 
+        { wch: 25 }, 
+        { wch: 25 }, 
+        { wch: 25 },
+      ];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(
+        wb, 
+        ws, 
+        'Sheet1'
+      );
+      const excelBuffer = XLSX.write(
+        wb, 
+        { 
+          bookType: 'xlsx', 
+          type: 'array' 
+        }
+      );
+      const blob = new Blob(
+        [excelBuffer], 
+        { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+      );
+      saveAs(blob, "Laporan Keuangan");
+    }
+  }
+
   if(!mounted && !footer && !report) 
     return null;
   else
@@ -146,7 +220,7 @@ export default function LaporanKeuangan() {
           <Button 
             label="Ekspor Laporan ke XLSX"
             className="bg-[var(--green-dark)] text-[var(--green-light)]"
-            onClick={() => {}}
+            onClick={exportData}
           />
         </Container>
       </div>
