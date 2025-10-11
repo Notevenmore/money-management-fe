@@ -16,7 +16,7 @@ export const fetchIncomes = createAsyncThunk(
         }
       });
       nProgress.done();
-      return response.data.data;
+      return response.data.status_code == 202 ? response.data.data || [] : null;
     } catch (err) {
       nProgress.done();
       return rejectWithValue('Gagal mengambil daftar pemasukan');
@@ -25,7 +25,7 @@ export const fetchIncomes = createAsyncThunk(
 );
 
 export const createIncome = createAsyncThunk<{message: string}, Income>(
-  'incomes/createIncome',
+  'income/createIncome',
   async (income: Income, { rejectWithValue }) => {
     try {
       nProgress.start();

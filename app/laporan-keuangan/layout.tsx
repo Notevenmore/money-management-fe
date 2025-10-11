@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import "../globals.css";
 
 export const metadata: Metadata = {
   title: "Laporan Keuangan",
 };
 
-export default function RootLayout({
+export default function LaporanKeuanganLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log("LaporanKeuanganLayout mounted");
   return children;
 }

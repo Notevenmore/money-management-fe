@@ -1,3 +1,5 @@
+"use client"
+
 interface THeadProps {
   header: {
     head: string;

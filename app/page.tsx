@@ -30,25 +30,25 @@ export default function Home() {
     if(!assets) {
       dispatch(fetchAssets());
     }
-  }, [assets])
+  }, [dispatch, assets])
 
   useEffect(() => {
     if(!debts) {
       dispatch(fetchDebts());    
     }
-  }, [debts])
+  }, [dispatch, debts])
 
   useEffect(() => {
     if(!outcomes) {
       dispatch(fetchOutcomes());
     }
-  }, [outcomes])
+  }, [dispatch, outcomes])
 
   useEffect(() => {
     if(!incomes) {
       dispatch(fetchIncomes());
     }
-  }, [incomes])
+  }, [dispatch, incomes])
 
   const onUpdate = async (id: number, value: boolean, debt: Debt) => {
     await dispatch(updateDebt({
@@ -98,8 +98,8 @@ export default function Home() {
           />
         </div>
         <div className="col-start-2 col-end-3 row-start-2 row-end-6 py-[39px] pe-[75px] w-full">
-          <Container className="w-full h-max max-h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden">
-            <div className="overflow-y-scroll h-full flex flex-col items-center gap-[10px]">
+          <Container className="w-full h-full max-h-full bg-[var(--green-light)] rounded-[23px] overflow-y-hidden py-[39px]">
+            <div className="overflow-y-scroll h-full max-h-full flex flex-col items-center gap-[10px]">
               {
                 debts?.map((value, index) => (
                   <ComponentCard 

@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchIncomes } from "@/services/incomeServices";
 import { fetchOutcomes } from "@/services/outcomeServices";
-// import * as XLSX from 'xlsx';
 import XLSX  from 'xlsx-js-style';
 import { saveAs } from 'file-saver';
 
@@ -52,7 +51,7 @@ export default function LaporanKeuangan() {
   const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
-    if(incomes && outcomes) {
+    if(incomes !== null && outcomes !== null) {
       setReport([
         ...(incomes.map(value => ({
           tanggal: new Intl.DateTimeFormat('id-ID', {
@@ -107,16 +106,19 @@ export default function LaporanKeuangan() {
   }, [incomes, outcomes])
 
   useEffect(() => {
-    if(!incomes) {
+    console.log(incomes);
+    if(incomes == null) {
+      console.log("belum ada")
       dispatch(fetchIncomes())
+    } else {
     }
-  }, [incomes])
 
-  useEffect(() => {
-    if(!outcomes) {
+    console.log(outcomes);
+    if(outcomes == null) {
+      console.log("belum ada")
       dispatch(fetchOutcomes())
-    }
-  }, [outcomes])
+    } 
+  }, [dispatch, incomes, outcomes])
 
   const exportData = async () => {
     if(report) {
@@ -189,40 +191,39 @@ export default function LaporanKeuangan() {
     }
   }
 
-  if(!mounted && !footer && !report) 
-    return null;
-  else
-    return (
-      <div className="flex flex-col gap-[39px] justify-center justify-items-center bg-white h-max min-h-[90vh] px-[54px] py-[39px] overflow-y-scroll">
-        <Container className="flex gap-[10px] items-center justify-center py-[10px] w-full h-[62px] bg-[var(--green-light)] rounded-[23px]">
-          <Button 
-            label="Tambah Pemasukan"
-            className="bg-[var(--green-dark)] text-[var(--green-light)]"
-            onClick={() => { router.push('/laporan-keuangan/tambah-pemasukan') }}
-          />
-          <Button 
-            label="Laporan Keuangan"
-            className="bg-[var(--green-dark)] text-[var(--green-light)]"
-            onClick={() => {}}
-          />
-          <Button 
-            label="Tambah Pengeluaran"
-            className="bg-[var(--green-dark)] text-[var(--green-light)]"
-            onClick={() => { router.push('/laporan-keuangan/tambah-pengeluaran') }}
-          />
-        </Container>
-        <Table
+  return (
+    <div className="flex flex-col gap-[39px] justify-center justify-items-center bg-white h-max min-h-[90vh] px-[54px] py-[39px] overflow-y-scroll">
+      <Container className="flex gap-[10px] items-center justify-center py-[10px] w-full h-[62px] bg-[var(--green-light)] rounded-[23px]">
+        <Button 
+          label="Tambah Pemasukan"
+          className="bg-[var(--green-dark)] text-[var(--green-light)]"
+          onClick={() => { router.push('/laporan-keuangan/tambah-pemasukan') }}
+        />
+        <Button 
+          label="Laporan Keuangan"
+          className="bg-[var(--green-dark)] text-[var(--green-light)]"
+          onClick={() => {}}
+        />
+        <Button 
+          label="Tambah Pengeluaran"
+          className="bg-[var(--green-dark)] text-[var(--green-light)]"
+          onClick={() => { router.push('/laporan-keuangan/tambah-pengeluaran') }}
+        />
+      </Container>
+      {
+        footer && report && <Table
           data={report}
           header={header}
           footer={footer!}
         />
-        <Container className="flex gap-[10px] items-center justify-center py-[10px] w-full h-[62px] bg-[var(--green-light)] rounded-[23px]">
-          <Button 
-            label="Ekspor Laporan ke XLSX"
-            className="bg-[var(--green-dark)] text-[var(--green-light)]"
-            onClick={exportData}
-          />
-        </Container>
-      </div>
-    );
+      }
+      <Container className="flex gap-[10px] items-center justify-center py-[10px] w-full h-[62px] bg-[var(--green-light)] rounded-[23px]">
+        <Button 
+          label="Ekspor Laporan ke XLSX"
+          className="bg-[var(--green-dark)] text-[var(--green-light)]"
+          onClick={exportData}
+        />
+      </Container>
+    </div>
+  );
 }

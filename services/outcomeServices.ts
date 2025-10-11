@@ -16,7 +16,7 @@ export const fetchOutcomes = createAsyncThunk(
         }
       });
       nProgress.done();
-      return response.data.data;
+      return response.data.status_code == 202 ? response.data.data || [] : [];
     } catch (err) {
       nProgress.done();
       return rejectWithValue('Gagal mengambil daftar pengeluaran');

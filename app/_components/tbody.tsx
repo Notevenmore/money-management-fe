@@ -1,3 +1,5 @@
+"use client"
+
 interface TBodyProps {
   data?: any[];
   header: {

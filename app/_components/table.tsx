@@ -1,3 +1,5 @@
+"use client"
+
 import { table } from "console";
 import THead from "./thead";
 import TBody from "./tbody";

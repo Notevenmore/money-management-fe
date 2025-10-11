@@ -1,3 +1,5 @@
+"use client"
+
 interface TFooterProps {
   footer: {
     label: string;

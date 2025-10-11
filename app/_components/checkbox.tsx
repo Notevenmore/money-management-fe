@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 
 interface CheckboxProps<K extends string, T extends Record<string, any>> {
